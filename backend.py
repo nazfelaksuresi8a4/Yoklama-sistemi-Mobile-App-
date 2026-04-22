@@ -5,14 +5,14 @@ class Backend:
     def __init__(self):
         self.api_state = 0
         self.config = {
-            'apiKey': "-",
-            'authDomain': "-",
-            'databaseURL': "-",
-            'projectId': "-",
-            'storageBucket': "-",
-            'messagingSenderId': "-",
-            'appId': "-",
-            'measurementId': "-"
+            'apiKey': "",
+            'authDomain': "",
+            'databaseURL': "",
+            'projectId': "",
+            'storageBucket': "",
+            'messagingSenderId': "",
+            'appId': "",
+            'measurementId': ""
                         }
         
         try:
@@ -32,7 +32,19 @@ class Backend:
                 login_status = self.auth.sign_in_with_email_and_password(email,
                                                                          password)
             except Exception as e0fx:
-                return (0,e0fx)
+                dct = {}
+                memory = {}
+
+                for enum,msg in enumerate(str(e0fx).split('\n')):
+                    try:
+                        key,val = msg.split(':')
+                        dct[key] = val
+                    except:
+                        memory[enum] = msg.split(':')
+                
+                print(dct)
+                
+                return ('not',dct,memory)
 
             if login_status:
                 return ('ok',login_status)
@@ -41,7 +53,7 @@ class Backend:
         
         else:
             if sign_up_status:
-                return (0,login_status)
+                return ('not',login_status)
             else:
                 print(f'is None')
 
