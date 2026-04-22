@@ -88,6 +88,14 @@ class mainWindow():
         
         self.example_register_button = ft.TextButton(content='Hesabın yokmu Kayıt ol')
 
+        self.dlg = ft.AlertDialog(content=ft.Text(value='Giriş yapılamadı'),
+                                  actions=[ft.ElevatedButton(content='Tamam',on_click=self.closedlg)],
+                                  title='Detaylı hata raporu'
+            )
+        
+        '''page-actions'''
+        
+
 
         '''widgets-register'''
         self.register_lbl = ft.Text(value='Kayıt ol',
@@ -151,7 +159,10 @@ class mainWindow():
                                                               self.controls,
                                                               self.register_widgets_list,
                                                               self.type_dict)
-
+        self.routeMainMenu = lambda _ : self.router.swapUi(self.page,
+                                                           self.controls,
+                                                           #self.main_menu_widget_list,
+                                                           self.type_dict)
 
         #Button-Functions
         self.example_register_button.on_click = self.routeRegisterScreen
@@ -177,13 +188,53 @@ class mainWindow():
             response = self.BackendModule.login(self.gmail_value,
                                                 self.password_value)
 
+            if response[0] == 'ok':
+                self.login_label.value = 'Giriş başarılı ana sayfaya aktarılıyorsunuz'
+                self.login_label.color = ft.Colors.GREEN_ACCENT
+
+                self.dlg.title = 'Giriş başarılı'
+                self.dlg.content = ft.Text(value=str('Giriş işlemi başarılı. Ana sayfaya yönlenmek için, tamam a tıklayınız'),
+                                           style=self.textStyle,
+                                           color=ft.Colors.RED)
+                
+                self.dlg.actions = ft.ElevatedButton('Tamam',
+                                             on_click=lambda e : self.routeMainmenu,
+                                             style=self.buttonStyle,
+                                             elevation=0.35,
+                                             bgcolor=ft.Colors.GREEN,
+                                             color=ft.Colors.RED
+                                             )
+
+                self.dlg.bgcolor = ft.Colors.BLACK
+                self.page.show_dialog(self.dlg)
+            
+            else:
+                self.login_label.value = 'Giriş başarısız şifre veya kullanıcı adınız hatalı'
+                self.login_label.color = ft.Colors.RED
+
+                self.dlg.title = 'Giriş başarısız'
+                self.dlg.content = ft.Text(value=str(response[1]),
+                                           style=self.textStyle,
+                                           color=ft.Colors.RED)
+                
+                self.dlg.actions = ft.ElevatedButton('Tamam',
+                                                            on_click = self.closedlg,
+                                                            style=self.buttonStyle,
+                                                            elevation=0.35,
+                                                            bgcolor=ft.Colors.RED,
+                                                            color=ft.Colors.GREEN
+                                                            )
+                self.dlg.bgcolor = ft.Colors.BLACK
+                self.page.show_dialog(self.dlg)
+
             return response
 
         else:
             return 'Lütfen Şifre ve Gmail alanlarını doldurup tekrar deneyiniz!'
 
 
-        
+    def closedlg(self,_):
+        self.dlg.open = False    
 
     def errorPage(self,page : ft.Page):
         controls = page.controls
